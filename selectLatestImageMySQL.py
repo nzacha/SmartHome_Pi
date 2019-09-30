@@ -18,8 +18,8 @@ def readBLOB():
 	#fetch latest image from db
 	print("Reading BLOB data from Images table")	
 	try:
-		connection = mysql.connector.connect(host='40.115.18.125',database='EPL428', user='admin', password='Pass1234!')
-	
+		connection = mysql.connector.connect(host='40.115.18.125',database='EPL428', user='admin', password='Pass1234!',raw=True)
+
 		sqlSelectQuery= "select image from Images ORDER BY ID DESC LIMIT 1"
 		cursor = connection.cursor()
 		cursor.execute(sqlSelectQuery)
@@ -32,16 +32,17 @@ def readBLOB():
 		
 		unknown_picture = face_recognition.load_image_file("temp.jpg")
 		unknown_face_encodings = face_recognition.face_encodings(unknown_picture)
-		
+
 		unknown_face_encoding = None
-		if unknown_face_encodings:
+		if len(unknown_face_encodings)>0:
 			unknown_face_encoding = unknown_face_encodings[0]
 		else:
 			print("No faces recognized")
 
+
 		#compare face encodings
-		if len(unknown_face_encoding)>0:
-			results = face_recognition.compare_faces(my_face_encoding, unknown_face_encoding)
+		if unknown_face_encodings:
+			results = face_recognition.compare_faces([my_face_encoding], unknown_face_encoding)
 			
 			if results[0] == True:
 				print("Access Granted!")
