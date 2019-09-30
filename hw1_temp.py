@@ -13,14 +13,17 @@ try:
     connection = mysql.connector.connect(host='40.115.18.125', database='EPL428', user='admin',
                                          password='Pass1234!', raw=True)
 
-    sqlSelectQuery = "INSERT INTO Data(Temperature,Humidity) VALUES (%s,%s)"
     cursor = connection.cursor()
+    sqlSelectQuery = """INSERT INTO Data(Temperature,Humidity) VALUES (%s,%s)"""
 
     while True:
         humid, temper = Adafruit_DHT.read_retry(DHTSensor, GPIO_Pin)
-        args = (temper, humid)
-        cursor.execute(sqlSelectQuery, args)
-        cursor.execute(sqlSelectQuery)
+	if(not((humid is None)or(temper is None))):
+		args = (temper, humid)
+	        cursor.execute(sqlSelectQuery, args)
+		connection.commit()
+	else:
+		print("Temperature or Humidity value is Null")
         time.sleep(5)
 
 except Error as error:
